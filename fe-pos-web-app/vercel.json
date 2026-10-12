@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!api/|invoices/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
