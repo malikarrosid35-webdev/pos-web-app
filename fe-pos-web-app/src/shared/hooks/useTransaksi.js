@@ -132,18 +132,26 @@ export function useTransaksi({ mode }) {
     }
   };
 
+  // Returns the API response on success and null on failure, so callers can
+  // keep the cart and payment input when the sale was not saved.
   const addTransaksi = async (data, onSuccess) => {
     try {
-      const response = await createTransaksi(data);
+      const response = await createTransaksi(data, mode);
       const ownerNotificationFeedback = buildOwnerNotificationFeedback(response);
       const successMessage = ownerNotificationFeedback
         ? `Transaksi telah dibuat\n\n${ownerNotificationFeedback}`
         : "Transaksi telah dibuat";
       Swal.fire("Berhasil", successMessage, "success");
       if (onSuccess) onSuccess();
+      return response;
     } catch (err) {
       console.error(err);
-      Swal.fire("Gagal", "Transaksi gagal dibuat", "error");
+      Swal.fire(
+        "Gagal",
+        err.response?.data?.message || "Transaksi gagal dibuat",
+        "error",
+      );
+      return null;
     }
   };
 

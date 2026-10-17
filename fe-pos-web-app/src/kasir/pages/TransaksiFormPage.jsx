@@ -34,7 +34,9 @@ const toGrams = (qty, unit) => {
 
 const MAX_BAYAR = 500000;
 
-export const TransaksiFormPage = () => {
+// `mode` picks which API namespace the page talks to. The owner reuses this page
+// (mode="owner") so the sale is sent with the owner's own cookie and user id.
+export const TransaksiFormPage = ({ mode = "kasir" }) => {
   const navigate = useNavigate();
   const { setActiveTab } = useUIStore();
 
@@ -47,14 +49,14 @@ export const TransaksiFormPage = () => {
     fetchPelanggan,
     search: searchPelanggan,
     loading: loadingPelanggan,
-  } = usePelanggan({ searchQuery: custSearch, setPelanggan, mode: "kasir" });
+  } = usePelanggan({ searchQuery: custSearch, setPelanggan, mode });
 
   // State Barang
   const {
     fetchBarang,
     groupedProducts,
     loading: loadingBarang,
-  } = useBarang({ mode: "kasir" });
+  } = useBarang({ mode, catalog: true });
 
   const allProducts = useMemo(() => {
     return Object.values(groupedProducts).flat();
@@ -74,7 +76,7 @@ export const TransaksiFormPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [successData, setSuccessData] = useState(null);
 
-  const { addTransaksi } = useTransaksi({ mode: "kasir" });
+  const { addTransaksi } = useTransaksi({ mode });
 
   // ── Computed ───────────────────────────────────────────
   const selectedProduct = allProducts.find((p) => p.id === selectedProductId);
@@ -285,6 +287,9 @@ export const TransaksiFormPage = () => {
     try {
       setIsProcessing(true);
       const response = await addTransaksi(payload);
+      // addTransaksi already showed the error dialog. Keep the cart and the
+      // payment input so the user can retry instead of re-entering everything.
+      if (!response) return;
       setSuccessData({
         ownerFeedback: buildOwnerNotificationFeedback(response),
         total: totalHarga,

@@ -12,6 +12,7 @@ import DaftarPelanggan from "../owner/pages/DaftarPelanggan.jsx";
 import DetailTransaksi from "../owner/pages/DetailTransaksi.jsx";
 import DetailNotifikasi from "../owner/pages/DetailNotifikasi.jsx";
 import Notifikasi from "../owner/pages/Notifikasi.jsx";
+import { TransaksiFormPage } from "../kasir/pages/TransaksiFormPage.jsx";
 import useFcmNotification from "../shared/hooks/useFcmNotification.js";
 import { useAuthStore } from "../stores/useAuthStore.js";
 
@@ -67,7 +68,13 @@ export default function OwnerRoutes() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="laporan-toko" element={<LaporanToko />} />
-            <Route path="riwayat-barang-masuk" element={<BarangMasuk />} />
+            <Route path="buat-transaksi" element={<TransaksiFormPage mode="owner" />} />
+            <Route path="barang-masuk" element={<BarangMasuk />} />
+            {/* Old URL (bookmarks / installed PWA) */}
+            <Route
+              path="riwayat-barang-masuk"
+              element={<Navigate to="/owner/barang-masuk" replace />}
+            />
             <Route path="daftar-barang" element={<DaftarBarang />} />
             <Route path="histori-transaksi" element={<HistoriTransaksi />} />
             <Route path="detail-transaksi/:id" element={<DetailTransaksi />} />

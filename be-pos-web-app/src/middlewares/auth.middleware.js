@@ -21,11 +21,16 @@ const authenticate = (req, res, next) => {
   }
 };
 
+// Roles that pass every authorize() check, on top of the roles listed on a route.
+// Owner has full access, so new routes do not need to remember to list "owner".
+const SUPER_ROLES = ["owner"];
+
 const authorize = (roles) => (req, res, next) => {
-  if (!roles.includes(req.user?.role)) {
+  const role = req.user?.role;
+  if (!SUPER_ROLES.includes(role) && !roles.includes(role)) {
     return res.status(403).json({ message: "Akses ditolak" });
   }
   next();
 };
 
-export { authenticate, authorize };
+export { authenticate, authorize, SUPER_ROLES };

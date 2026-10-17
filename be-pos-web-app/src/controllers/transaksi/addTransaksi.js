@@ -6,15 +6,11 @@ const addTransaksi = async (req, res) => {
   let client;
 
   try {
-    const {
-      tipe_pelanggan,
-      id_pelanggan,
-      id_user: idUserFromBody,
-      items,
-      jumlah_bayar,
-    } = req.body;
+    const { tipe_pelanggan, id_pelanggan, items, jumlah_bayar } = req.body;
 
-    const id_user = idUserFromBody || req.user?.id_user;
+    // The sale is always attributed to the logged-in user. A client-supplied
+    // id_user is ignored so one user cannot record a sale as someone else.
+    const id_user = req.user?.id_user;
 
     if (
       !tipe_pelanggan ||
@@ -239,7 +235,8 @@ const addTransaksi = async (req, res) => {
     let notificationError = null;
 
     try {
-      const actorRoleLabel = req.user?.role === "admin" ? "Admin" : "Kasir";
+      const actorRoleLabel =
+        { admin: "Admin", owner: "Owner" }[req.user?.role] || "Kasir";
       await sendTransactionCreated({
         payload: {
           actorRole: actorRoleLabel,

@@ -1,13 +1,76 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { useUIStore } from "../../stores/useUIStore.js";
 import { useBarangMasukStore } from "../../stores/useBarangMasukStore.js";
 import { useBarangMasuk } from "../../shared/hooks/useBarangMasuk.js";
+import { getBarangOwner } from "../../shared/services/barangService.js";
 import { formatToRupiah } from "../../shared/utils/numberFormat.js";
 import { formatQty } from "../../shared/utils/qtyFormat.js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import BarangMasukTabs from "../../admin/components/barangMasuk/BarangMasukTabs.jsx";
+import FormBarangMasukBaru from "../../admin/components/barangMasuk/FormBarangMasukBaru.jsx";
+import FormBarangMasukExisting from "../../admin/components/barangMasuk/FormBarangMasukExisting.jsx";
 
+// Owner can add stock like admin does (new item / existing item) and still see
+// the stock-in history, so the page is tabbed. The forms are shared with admin
+// and run in mode="owner" so requests go out with the owner's cookie.
 export default function BarangMasuk() {
   const { setActiveTab } = useUIStore();
+  const [activeTabLocal, setActiveTabLocal] = useState("history");
+  const [barangList, setBarangList] = useState([]);
+  const [loadingBarang, setLoadingBarang] = useState(true);
+
+  const fetchBarangList = async () => {
+    try {
+      setLoadingBarang(true);
+      const res = await getBarangOwner();
+      setBarangList(res.data?.data || res.data?.rows || []);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Gagal memuat data barang", "error");
+    } finally {
+      setLoadingBarang(false);
+    }
+  };
+
+  useEffect(() => {
+    setActiveTab("Barang Masuk");
+    fetchBarangList();
+  }, []);
+
+  return (
+    <div className="flex-1 p-3 sm:p-6 bg-gray-50 min-h-screen">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+          Barang Masuk
+        </h1>
+      </div>
+
+      <BarangMasukTabs activeTab={activeTabLocal} onChange={setActiveTabLocal} />
+
+      {activeTabLocal === "baru" && (
+        <div className="bg-white rounded shadow p-4 sm:p-6">
+          <FormBarangMasukBaru mode="owner" onSuccess={fetchBarangList} />
+        </div>
+      )}
+
+      {activeTabLocal === "existing" && (
+        <div className="bg-white rounded shadow p-4 sm:p-6">
+          <FormBarangMasukExisting
+            mode="owner"
+            barangList={barangList}
+            loading={loadingBarang}
+            onSuccess={fetchBarangList}
+          />
+        </div>
+      )}
+
+      {activeTabLocal === "history" && <RiwayatBarangMasuk />}
+    </div>
+  );
+}
+
+function RiwayatBarangMasuk() {
   const { barangMasuk, setBarangMasuk } = useBarangMasukStore();
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
@@ -16,10 +79,6 @@ export default function BarangMasuk() {
     setBarangMasuk,
     mode: "owner",
   });
-
-  useEffect(() => {
-    setActiveTab("Riwayat Barang Masuk");
-  }, []);
 
   useEffect(() => {
     fetchBarangMasuk({ page, limit: 10, keyword });
@@ -83,12 +142,7 @@ export default function BarangMasuk() {
   };
 
   return (
-    <div className="flex-1 p-3 sm:p-6 bg-gray-50 min-h-screen">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          Riwayat Barang Masuk
-        </h1>
-      </div>
+    <div>
       <form onSubmit={handleSearch} className="mb-4 sm:mb-6">
         <div className="relative">
           <input

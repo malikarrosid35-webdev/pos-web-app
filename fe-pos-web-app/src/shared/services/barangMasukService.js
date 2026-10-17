@@ -10,11 +10,14 @@ const getBarangMasukByIdAdmin = (id) => adminClient.get(`/barang-masuk/${id}`);
 const getBarangMasukByIdKasir = (id) => kasirClient.get(`/barang-masuk/${id}`);
 const getBarangMasukByIdOwner = (id) => ownerClient.get(`/barang-masuk/${id}`);
 
-const createBarangMasukNew = (data) =>
-  adminClient.post("/barang-masuk/new", data);
+const createBarangMasukNew = (data, mode = "admin") =>
+  (mode === "owner" ? ownerClient : adminClient).post("/barang-masuk/new", data);
 
-const createBarangMasukExisting = (data) =>
-  adminClient.post("/barang-masuk/existing", data);
+const createBarangMasukExisting = (data, mode = "admin") =>
+  (mode === "owner" ? ownerClient : adminClient).post(
+    "/barang-masuk/existing",
+    data,
+  );
 
 const deleteBarangMasuk = (id) => adminClient.delete(`/barang-masuk/${id}`);
 

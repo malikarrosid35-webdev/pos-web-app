@@ -18,6 +18,12 @@ const updateUserById = async (req, res) => {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
+    // Only an owner may change an owner account; otherwise an admin could
+    // reset the owner's password and take the account over.
+    if (existingUser.rows[0].role === "owner" && req.user?.role !== "owner") {
+      return res.status(403).json({ message: "Akses ditolak" });
+    }
+
     const updateFields = [];
     const values = [];
 
@@ -33,15 +39,11 @@ const updateUserById = async (req, res) => {
     }
 
     values.push(id_user);
-    const query = `UPDATE users SET ${updateFields.join(
-      ", "
-    )} WHERE id_user = $${values.length}`;
-    await pool.query(query, values);
-
+    // Single UPDATE; never return the password hash to the caller.
     const updatedUser = await pool.query(
       `UPDATE users SET ${updateFields.join(", ")} WHERE id_user = $${
         values.length
-      } RETURNING *`,
+      } RETURNING id_user, username, role`,
       values
     );
 
@@ -51,6 +53,9 @@ const updateUserById = async (req, res) => {
       data: updatedUser.rows[0],
     });
   } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({ message: "Username sudah digunakan" });
+    }
     console.error(err.message);
     res.status(500).json({ message: "Server Error" });
   }

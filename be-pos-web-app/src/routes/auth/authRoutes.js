@@ -1,12 +1,8 @@
 import express from "express";
 const router = express.Router();
-import {
-  registerUser,
-  loginLimiter,
-  loginUser,
-} from "../../controllers/auth/index.js";
+import { loginLimiter, loginUser } from "../../controllers/auth/index.js";
 
-router.post("/register", registerUser);
+// User creation is no longer public: see POST /api/owner/users (roleAuthRoutes.js).
 router.post("/login", loginLimiter, loginUser);
 
 export default router;

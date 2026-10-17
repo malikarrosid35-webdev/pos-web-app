@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useUIStore } from "../../stores/useUIStore.js";
 import { usePelangganStore } from "../../stores/usePelangganStore.js";
 import { usePelanggan } from "../../shared/hooks/usePelanggan.js";
+import { PelangganForm } from "../../kasir/components/PelangganForm.jsx";
+import Swal from "sweetalert2";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+
+const EMPTY_FORM = { nama_pelanggan: "", no_hp: "" };
 
 export default function DaftarPelanggan() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,13 +14,60 @@ export default function DaftarPelanggan() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
   const [isSearching, setIsSearching] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [activeModal, setActiveModal] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
-  const { fetchPelanggan, search, loading, meta } = usePelanggan({
-    searchQuery: searchTerm,
-    setPelanggan,
-    mode: "owner",
-  });
+  const { fetchPelanggan, search, loading, meta, create, update } =
+    usePelanggan({
+      searchQuery: searchTerm,
+      setPelanggan,
+      mode: "owner",
+    });
   const { setActiveTab } = useUIStore();
+
+  // create/update refetch page 1 themselves; reload the page the owner is on.
+  const reloadCurrentPage = () =>
+    searchTerm.trim()
+      ? search(currentPage, limit)
+      : fetchPelanggan(currentPage, limit);
+
+  const openCreate = () => {
+    setForm(EMPTY_FORM);
+    setEditingId(null);
+    setActiveModal("create");
+  };
+
+  const openEdit = (p) => {
+    setForm({ nama_pelanggan: p.nama_pelanggan || "", no_hp: p.no_hp || "" });
+    setEditingId(p.id_pelanggan);
+    setActiveModal("edit");
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    if (!form.nama_pelanggan.trim()) {
+      return Swal.fire("Validasi", "Nama pelanggan wajib diisi", "warning");
+    }
+    const payload = {
+      nama_pelanggan: form.nama_pelanggan.trim(),
+      no_hp: form.no_hp?.trim() || null,
+    };
+    const ok =
+      activeModal === "edit"
+        ? await update(editingId, payload)
+        : await create(payload);
+    if (ok) {
+      closeModal();
+      reloadCurrentPage();
+    }
+  };
 
   useEffect(() => {
     setActiveTab("Daftar Pelanggan");
@@ -97,15 +148,24 @@ export default function DaftarPelanggan() {
 
   return (
     <div className="flex-1 p-3 sm:p-6 bg-gray-50 min-h-screen">
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          Daftar Pelanggan Member
-        </h1>
-        <div className="text-sm text-gray-500">
-          {isSearching
-            ? `Hasil Data : ${meta.total_data || 0}`
-            : `Total Data: ${meta.total_data || 0}`}
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            Daftar Pelanggan Member
+          </h1>
+          <div className="text-sm text-gray-500">
+            {isSearching
+              ? `Hasil Data : ${meta.total_data || 0}`
+              : `Total Data: ${meta.total_data || 0}`}
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={openCreate}
+          className="px-4 py-2 rounded-md bg-violet-700 text-white hover:bg-violet-800 active:bg-violet-900 cursor-pointer text-sm font-medium"
+        >
+          Tambah Pelanggan
+        </button>
       </div>
 
       <form onSubmit={handleSearch} className="mb-4 sm:mb-6">
@@ -157,13 +217,14 @@ export default function DaftarPelanggan() {
                   Frekuensi
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-left font-bold">Poin</th>
+                <th className="px-4 sm:px-6 py-3 text-left font-bold">Aksi</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {pelanggan.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="6"
+                    colSpan="7"
                     className="px-4 sm:px-6 py-4 text-center text-gray-500"
                   >
                     Tidak ada data pelanggan
@@ -189,6 +250,15 @@ export default function DaftarPelanggan() {
                     </td>
                     <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
                       {p.poin_loyalitas}
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(p)}
+                        className="px-3 py-1 rounded bg-violet-700 text-white text-xs hover:bg-violet-800 cursor-pointer"
+                      >
+                        Edit
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -243,6 +313,21 @@ export default function DaftarPelanggan() {
             </button>
           </div>
         </div>
+      )}
+
+      {activeModal && (
+        <PelangganForm
+          title={
+            activeModal === "edit"
+              ? "Edit Pelanggan"
+              : "Tambah Pelanggan Member"
+          }
+          submitLabel={activeModal === "edit" ? "Simpan" : "Tambah"}
+          form={form}
+          setForm={setForm}
+          onSubmit={submitForm}
+          onCancel={closeModal}
+        />
       )}
     </div>
   );

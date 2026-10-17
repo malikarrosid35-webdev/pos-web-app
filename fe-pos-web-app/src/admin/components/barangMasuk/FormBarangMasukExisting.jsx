@@ -12,11 +12,12 @@ export default function FormBarangMasukExisting({
   barangList,
   loading,
   onSuccess,
+  mode = "admin",
 }) {
   const { setBarangMasuk } = useBarangMasukStore();
   const { createExisting } = useBarangMasuk({
     setBarangMasuk,
-    mode: "admin",
+    mode,
   });
 
   const [idBarang, setIdBarang] = useState("");

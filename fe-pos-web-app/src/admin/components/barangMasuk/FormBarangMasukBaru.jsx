@@ -8,11 +8,11 @@ import {
   formatToRupiah,
 } from "../../../shared/utils/numberFormat.js";
 
-export default function FormBarangMasukBaru({ onSuccess }) {
+export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
   const { setBarangMasuk } = useBarangMasukStore();
   const { createNew } = useBarangMasuk({
     setBarangMasuk,
-    mode: "admin",
+    mode,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

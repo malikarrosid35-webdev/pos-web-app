@@ -73,7 +73,7 @@ export function useBarangMasuk({ setBarangMasuk = () => {}, mode }) {
 
   const createNew = async (data) => {
     try {
-      const response = await createBarangMasukNew(data);
+      const response = await createBarangMasukNew(data, mode);
       const ownerNotificationFeedback = buildOwnerNotificationFeedback(response);
       const successMessage = ownerNotificationFeedback
         ? `Barang baru berhasil ditambahkan\n\n${ownerNotificationFeedback}`
@@ -93,7 +93,7 @@ export function useBarangMasuk({ setBarangMasuk = () => {}, mode }) {
 
   const createExisting = async (data) => {
     try {
-      const response = await createBarangMasukExisting(data);
+      const response = await createBarangMasukExisting(data, mode);
       const ownerNotificationFeedback = buildOwnerNotificationFeedback(response);
       const successMessage = ownerNotificationFeedback
         ? `Stok berhasil ditambahkan\n\n${ownerNotificationFeedback}`

@@ -117,7 +117,7 @@ export function usePelanggan({
 
   const create = async (data) => {
     try {
-      const response = await createPelanggan(data);
+      const response = await createPelanggan(data, mode);
       await fetchPelanggan();
       const ownerNotificationFeedback = buildOwnerNotificationFeedback(response);
       const successMessage = ownerNotificationFeedback
@@ -138,7 +138,7 @@ export function usePelanggan({
 
   const update = async (id, data) => {
     try {
-      const response = await updatePelanggan(id, data);
+      const response = await updatePelanggan(id, data, mode);
       await fetchPelanggan();
       const ownerNotificationFeedback = buildOwnerNotificationFeedback(response);
       const successMessage = ownerNotificationFeedback

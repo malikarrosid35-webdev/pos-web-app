@@ -13,8 +13,17 @@ import {
 } from "../services/barangService.js";
 import { buildOwnerNotificationFeedback } from "../utils/ownerNotificationHelper.js";
 
-export function useBarang({ searchQuery = "", setBarang = () => {}, mode }) {
+// `catalog` builds the grouped product list the sale form needs (groupedProducts,
+// categories). It is always on for kasir; owner passes it when it uses the sale form.
+export function useBarang({
+  searchQuery = "",
+  setBarang = () => {},
+  mode,
+  catalog = false,
+}) {
   if (!mode) throw new Error("Mode is required in useBarang hook");
+
+  const asCatalog = catalog || mode === "kasir";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,11 +79,11 @@ export function useBarang({ searchQuery = "", setBarang = () => {}, mode }) {
       const data = res.data?.data || res.data?.rows || [];
       const metaData = res.data?.meta || {};
 
-      if (mode === "admin" || mode === "owner") {
+      if (asCatalog) {
+        prepareKasirData(data);
+      } else {
         setBarang(data);
         setMeta(metaData);
-      } else if (mode === "kasir") {
-        prepareKasirData(data);
       }
     } catch (err) {
       setError(err.message);
@@ -97,11 +106,11 @@ export function useBarang({ searchQuery = "", setBarang = () => {}, mode }) {
 
       const data = res.data?.data || res.data?.rows || [];
 
-      if (mode === "admin" || mode === "owner") {
+      if (asCatalog) {
+        prepareKasirData(data);
+      } else {
         setBarang(data);
         setMeta({});
-      } else if (mode === "kasir") {
-        prepareKasirData(data);
       }
     } catch (err) {
       Swal.fire("Error", "Gagal melakukan pencarian", "error");

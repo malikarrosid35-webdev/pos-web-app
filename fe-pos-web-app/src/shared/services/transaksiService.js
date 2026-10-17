@@ -1,7 +1,10 @@
 import kasirClient from "../../lib/http/kasirClient.js";
 import ownerClient from "../../lib/http/ownerClient.js";
 
-export const createTransaksi = (data) => kasirClient.post("/transaksi", data);
+// Owner's auth cookie is path-scoped to /api/owner, so an owner sale must go
+// through ownerClient; kasirClient would reach the server without a cookie.
+export const createTransaksi = (data, mode = "kasir") =>
+  (mode === "owner" ? ownerClient : kasirClient).post("/transaksi", data);
 
 export const getHistoriTransaksiKasir = (params) =>
   kasirClient.get("/transaksi", { params });

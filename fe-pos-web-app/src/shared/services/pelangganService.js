@@ -52,8 +52,10 @@ const searchPelangganOwner = (keyword, params = {}) => {
   return ownerClient.get(`/pelanggan/search`, { params: searchParams });
 };
 
-const createPelanggan = (data) => kasirClient.post("/pelanggan", data);
-const updatePelanggan = (id, data) => kasirClient.patch(`/pelanggan/${id}`, data);
+const createPelanggan = (data, mode = "kasir") =>
+  (mode === "owner" ? ownerClient : kasirClient).post("/pelanggan", data);
+const updatePelanggan = (id, data, mode = "kasir") =>
+  (mode === "owner" ? ownerClient : kasirClient).patch(`/pelanggan/${id}`, data);
 const deletePelanggan = (id) => adminClient.delete(`/pelanggan/${id}`);
 
 export {

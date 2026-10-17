@@ -71,7 +71,7 @@ export const DetailTransaksiPage = () => {
                   .replace(/\./g, ":")}
               </p>
               <p>
-                <strong>Kasir:</strong> {kasir}
+                <strong>Petugas:</strong> {kasir}
               </p>
               <p>
                 <strong>Status Transaksi:</strong> {status_transaksi}
