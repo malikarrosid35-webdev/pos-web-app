@@ -751,60 +751,6 @@ export const TransaksiFormPage = () => {
         </div>
       )}
 
-      {/* ── MODAL SUKSES ── */}
-      {successData && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
-            <div className="bg-green-600 px-6 py-5 text-center">
-              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mx-auto mb-3">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <h2 className="text-white text-xl font-bold">
-                Transaksi Berhasil!
-              </h2>
-              <p className="text-green-100 text-sm mt-1">
-                {successData.namaPelanggan} &middot;{" "}
-                <span className="capitalize">{successData.tipePelanggan}</span>
-              </p>
-            </div>
-            <div className="px-6 py-5 space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Total belanja</span>
-                <span className="font-semibold">
-                  {formatToRupiah(successData.total)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Jumlah bayar</span>
-                <span className="font-semibold">
-                  {formatToRupiah(successData.jumlahBayar)}
-                </span>
-              </div>
-              <div className="flex justify-between border-t pt-3">
-                <span className="text-gray-700 font-medium">Kembalian</span>
-                <span className="text-green-700 font-bold text-base">
-                  {formatToRupiah(successData.kembalian)}
-                </span>
-              </div>
-            </div>
-            <div className="px-6 pb-6 flex flex-col gap-2">
-              <button
-                onClick={handleTransaksiBaru}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold cursor-pointer"
-              >
-                Transaksi Baru
-              </button>
-              <button
-                onClick={() => navigate("/kasir/histori-transaksi")}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium cursor-pointer"
-              >
-                Lihat Histori
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ── OVERLAY PROCESSING ── */}
       {isProcessing && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
