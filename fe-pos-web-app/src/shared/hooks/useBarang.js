@@ -118,8 +118,8 @@ export function useBarang({ searchQuery = "", setBarang = () => {}, mode }) {
     Swal.fire("Sukses", successMessage, "success");
   };
 
-  const update = async (id, formData) => {
-    const response = await updateBarang(id, formData);
+  const update = async (id, formData, isImage = false) => {
+    const response = await updateBarang(id, formData, isImage, mode);
     const ownerNotificationFeedback = buildOwnerNotificationFeedback(response);
     const successMessage = ownerNotificationFeedback
       ? `Barang berhasil diperbarui\n\n${ownerNotificationFeedback}`

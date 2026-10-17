@@ -5,6 +5,7 @@ import { useBarang } from "../../shared/hooks/useBarang.js";
 import { formatToRupiah } from "../../shared/utils/numberFormat.js";
 import { formatQty } from "../../shared/utils/qtyFormat.js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import BarangModal from "../../admin/components/barang/BarangModal.jsx";
 
 const LIMIT = 10;
 
@@ -13,6 +14,8 @@ export default function DaftarBarang() {
   const { barang, setBarang } = useBarangStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentBarang, setCurrentBarang] = useState(null);
 
   const { fetchBarang, search, loading, meta } = useBarang({
     searchQuery,
@@ -145,6 +148,9 @@ export default function DaftarBarang() {
                   <th className="px-4 sm:px-6 py-3 text-left font-bold">
                     Harga Jual
                   </th>
+                  <th className="px-4 sm:px-6 py-3 text-left font-bold">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -177,6 +183,17 @@ export default function DaftarBarang() {
                       </td>
                       <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
                         {formatToRupiah(parseFloat(item.harga_jual_per_sd))}
+                      </td>
+                      <td className="px-4 sm:px-6 py-3 sm:py-4">
+                        <button
+                          onClick={() => {
+                            setCurrentBarang(item);
+                            setIsModalOpen(true);
+                          }}
+                          className="bg-violet-700 text-white px-3 py-1 rounded hover:bg-violet-800 cursor-pointer"
+                        >
+                          Edit
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -236,6 +253,18 @@ export default function DaftarBarang() {
             </div>
           )}
         </>
+      )}
+
+      {isModalOpen && (
+        <BarangModal
+          mode="owner"
+          currentBarang={currentBarang}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            fetchBarang({ page, limit: LIMIT });
+            setIsModalOpen(false);
+          }}
+        />
       )}
     </div>
   );

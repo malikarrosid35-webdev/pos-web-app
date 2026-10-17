@@ -20,8 +20,8 @@ const createBarang = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-const updateBarang = (id, formData, isImage) =>
-  adminClient.patch(`/barang/${id}`, formData, {
+const updateBarang = (id, formData, isImage, mode = "admin") =>
+  (mode === "owner" ? ownerClient : adminClient).patch(`/barang/${id}`, formData, {
     headers: isImage ? { "Content-Type": "multipart/form-data" } : {},
   });
 

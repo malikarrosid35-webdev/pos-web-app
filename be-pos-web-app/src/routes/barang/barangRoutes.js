@@ -37,7 +37,7 @@ router.get(
 router.patch(
   "/:id_barang",
   authenticate,
-  authorize(["admin"]),
+  authorize(["admin", "owner"]),
   updateBarangById,
 );
 

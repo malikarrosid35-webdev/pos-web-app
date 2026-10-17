@@ -8,11 +8,16 @@ import {
 import { useBarangStore } from "../../../stores/useBarangStore.js";
 import { X } from "lucide-react";
 
-export default function BarangModal({ currentBarang, onClose, onSuccess }) {
+export default function BarangModal({
+  currentBarang,
+  onClose,
+  onSuccess,
+  mode = "admin",
+}) {
   const { setBarang } = useBarangStore();
   const { create, update } = useBarang({
     setBarang,
-    mode: "admin",
+    mode,
   });
 
   const [formattedHargaJual, setFormattedHargaJual] = useState("");
