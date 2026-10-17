@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { buildOwnerNotificationFeedback } from "../../shared/utils/ownerNotificationHelper.js";
 import { useUIStore } from "../../stores/useUIStore.js";
 import { usePelanggan } from "../../shared/hooks/usePelanggan.js";
 import { usePelangganStore } from "../../stores/usePelangganStore.js";
@@ -283,8 +284,9 @@ export const TransaksiFormPage = () => {
 
     try {
       setIsProcessing(true);
-      await addTransaksi(payload);
+      const response = await addTransaksi(payload);
       setSuccessData({
+        ownerFeedback: buildOwnerNotificationFeedback(response),
         total: totalHarga,
         kembalian,
         jumlahBayar: bayar,
@@ -471,6 +473,14 @@ export const TransaksiFormPage = () => {
                       <button
                         key={p.id}
                         onClick={() => {
+                          if (Number(p.stock ?? p.stok_dasar ?? 0) <= 0) {
+                            Swal.fire(
+                              "Peringatan",
+                              "Tidak bisa pilih barang ini, karna stok barang kosong",
+                              "warning",
+                            );
+                            return;
+                          }
                           setSelectedProductId(p.id);
                           setProductSearch(p.name);
                         }}
@@ -494,17 +504,25 @@ export const TransaksiFormPage = () => {
                 <select
                   className="w-full px-3 py-2 border rounded-lg text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400"
                   value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
+                  onChange={(e) => {
+                    const p = allProducts.find((x) => x.id === e.target.value);
+                    if (p && Number(p.stock ?? p.stok_dasar ?? 0) <= 0) {
+                      setSelectedProductId("");
+                      Swal.fire(
+                        "Peringatan",
+                        "Tidak bisa pilih barang ini, karna stok barang kosong",
+                        "warning",
+                      );
+                      return;
+                    }
+                    setSelectedProductId(e.target.value);
+                  }}
                 >
                   <option value="">-- Pilih barang --</option>
                   {allProducts.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name} (Stok:{" "}
-                      {formatQty(
-                        p.stock ?? 0,
-                        p.satuan_dasar || p.satuan,
-                      )}
-                      )
+                      {formatQty(p.stock ?? 0, p.satuan_dasar || p.satuan)})
                     </option>
                   ))}
                 </select>
@@ -526,9 +544,7 @@ export const TransaksiFormPage = () => {
                 onKeyDown={
                   !isGram
                     ? (e) => {
-                        if (
-                          [".", ",", "e", "E", "+", "-"].includes(e.key)
-                        )
+                        if ([".", ",", "e", "E", "+", "-"].includes(e.key))
                           e.preventDefault();
                       }
                     : undefined
