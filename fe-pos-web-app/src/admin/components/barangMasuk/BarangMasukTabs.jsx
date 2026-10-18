@@ -1,8 +1,13 @@
-export default function BarangMasukTabs({ activeTab, onChange }) {
+export default function BarangMasukTabs({ activeTab, onChange, mode = "admin" }) {
+  const isOwner = mode === "owner";
+  const activeClass = isOwner
+    ? "bg-violet-700 text-white font-semibold"
+    : "bg-white border-b-0";
+  const inactiveClass = isOwner
+    ? "bg-violet-100 text-violet-800 hover:bg-violet-200"
+    : "bg-gray-200";
   const tabClass = (tab) =>
-    `px-4 py-2 rounded-t ${
-      activeTab === tab ? "bg-white border-b-0" : "bg-gray-200"
-    }`;
+    `px-4 py-2 rounded-t ${activeTab === tab ? activeClass : inactiveClass}`;
 
   return (
     <div className="mb-4">

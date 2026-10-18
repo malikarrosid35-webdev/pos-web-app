@@ -4,7 +4,8 @@ import { useBarangMasuk } from "../../../shared/hooks/useBarangMasuk.js";
 import { formatQty } from "../../../shared/utils/qtyFormat.js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function HistoriBarangMasuk() {
+export default function HistoriBarangMasuk({ mode = "admin" }) {
+  const isOwner = mode === "owner";
   const { barangMasuk, setBarangMasuk } = useBarangMasukStore();
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
@@ -12,7 +13,7 @@ export default function HistoriBarangMasuk() {
 
   const { fetchBarangMasuk, meta, loading } = useBarangMasuk({
     setBarangMasuk,
-    mode: "admin",
+    mode,
   });
 
   useEffect(() => {
@@ -88,13 +89,17 @@ export default function HistoriBarangMasuk() {
           <input
             type="text"
             placeholder="Cari nama barang masuk..."
-            className="w-full p-3 pr-24 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`w-full p-3 pr-24 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 ${isOwner ? "focus:ring-violet-400" : "focus:ring-blue-400"}`}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
           />
           <button
             type="submit"
-            className="absolute right-1 top-1 bottom-1 px-4 rounded-md bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 cursor-pointer"
+            className={`absolute right-1 top-1 bottom-1 px-4 rounded-md text-white cursor-pointer ${
+              isOwner
+                ? "bg-violet-700 hover:bg-violet-800 active:bg-violet-900"
+                : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+            }`}
           >
             Cari
           </button>
@@ -103,7 +108,7 @@ export default function HistoriBarangMasuk() {
 
       <div className="overflow-x-auto">
         <table className="min-w-full">
-          <thead className="bg-blue-400">
+          <thead className={isOwner ? "bg-violet-800 text-white" : "bg-blue-400"}>
             <tr>
               <th className="border px-3 py-2">No</th>
               <th className="border px-3 py-2">Nama Barang</th>
@@ -177,7 +182,9 @@ export default function HistoriBarangMasuk() {
                   onClick={() => handlePageChange(pageNum)}
                   className={`px-3 py-1 rounded border ${
                     currentPage === pageNum
-                      ? "bg-blue-500 text-white border-blue-500"
+                      ? isOwner
+                        ? "bg-violet-700 text-white border-violet-700"
+                        : "bg-blue-500 text-white border-blue-500"
                       : "hover:bg-gray-100"
                   } cursor-pointer`}
                 >

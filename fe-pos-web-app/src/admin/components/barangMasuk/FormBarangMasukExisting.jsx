@@ -12,12 +12,17 @@ export default function FormBarangMasukExisting({
   barangList,
   loading,
   onSuccess,
+  mode = "admin",
 }) {
   const { setBarangMasuk } = useBarangMasukStore();
   const { createExisting } = useBarangMasuk({
     setBarangMasuk,
-    mode: "admin",
+    mode,
   });
+  const submitClass =
+    mode === "owner"
+      ? "bg-violet-700 text-white hover:bg-violet-800"
+      : "bg-blue-400 text-slate-900 hover:bg-blue-500";
 
   const [idBarang, setIdBarang] = useState("");
   const [qty, setQty] = useState("");
@@ -193,7 +198,7 @@ export default function FormBarangMasukExisting({
           ${
             isSubmitting
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-400 text-slate-900 hover:bg-blue-500"
+              : submitClass
           }`}
         >
           {isSubmitting ? "Memproses..." : "Tambah Stok"}

@@ -8,12 +8,16 @@ import {
   formatToRupiah,
 } from "../../../shared/utils/numberFormat.js";
 
-export default function FormBarangMasukBaru({ onSuccess }) {
+export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
   const { setBarangMasuk } = useBarangMasukStore();
   const { createNew } = useBarangMasuk({
     setBarangMasuk,
-    mode: "admin",
+    mode,
   });
+  const submitClass =
+    mode === "owner"
+      ? "bg-violet-700 text-white hover:bg-violet-800"
+      : "bg-blue-400 text-slate-900 hover:bg-blue-500";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -252,7 +256,7 @@ export default function FormBarangMasukBaru({ onSuccess }) {
           ${
             isSubmitting
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-400 text-slate-900 hover:bg-blue-500"
+              : submitClass
           }`}
         >
           {isSubmitting ? "Menyimpan..." : "Simpan Barang Baru"}

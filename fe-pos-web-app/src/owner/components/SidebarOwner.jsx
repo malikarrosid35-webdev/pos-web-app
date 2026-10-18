@@ -36,9 +36,9 @@ export default function SidebarOwner({
       path: "/owner/laporan-toko",
     },
     {
-      name: "Riwayat Barang Masuk",
+      name: "Barang Masuk",
       icon: <Package size={20} />,
-      path: "/owner/riwayat-barang-masuk",
+      path: "/owner/barang-masuk",
     },
     {
       name: "Daftar Barang",
