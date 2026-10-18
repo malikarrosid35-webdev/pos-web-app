@@ -7,6 +7,8 @@ import {
   getPelangganById,
   searchPelanggan,
   updatePelangganById,
+  adjustPoin,
+  getRiwayatPoin,
   // deletePelangganById,
 } from "../../controllers/pelanggan/index.js";
 
@@ -38,6 +40,20 @@ router.patch(
   authenticate,
   authorize(["kasir"]),
   updatePelangganById,
+);
+
+router.get(
+  "/:id_pelanggan/riwayat-poin",
+  authenticate,
+  authorize(["kasir", "owner"]),
+  getRiwayatPoin,
+);
+
+router.post(
+  "/:id_pelanggan/poin",
+  authenticate,
+  authorize(["owner"]),
+  adjustPoin,
 );
 
 // router.delete(

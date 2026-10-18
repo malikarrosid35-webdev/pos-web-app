@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { usePelanggan } from "../../shared/hooks/usePelanggan.js";
 import { usePelangganStore } from "../../stores/usePelangganStore.js";
 import { PelangganForm } from "../components/PelangganForm.jsx";
+import RiwayatPoinModal from "../../shared/components/RiwayatPoinModal.jsx";
 import Swal from "sweetalert2";
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useUIStore } from "../../stores/useUIStore.js";
@@ -21,6 +22,7 @@ export const DaftarPelangganPage = () => {
   const [form, setForm] = useState({ nama_pelanggan: "", no_hp: "" });
   const [activeModal, setActiveModal] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  const [riwayatTarget, setRiwayatTarget] = useState(null);
   const { setActiveTab } = useUIStore();
 
   useEffect(() => {
@@ -245,6 +247,12 @@ export const DaftarPelangganPage = () => {
                 >
                   Edit Profile
                 </button>
+                <button
+                  className="w-full bg-yellow-700 text-white py-2 px-4 rounded hover:bg-yellow-800 cursor-pointer text-sm"
+                  onClick={() => setRiwayatTarget(c)}
+                >
+                  Riwayat Poin
+                </button>
               </div>
             </div>
           ))}
@@ -319,6 +327,14 @@ export const DaftarPelangganPage = () => {
               setForm={setForm}
               onSubmit={submitEdit}
               onCancel={closeModal}
+            />
+          )}
+
+          {riwayatTarget && (
+            <RiwayatPoinModal
+              pelanggan={riwayatTarget}
+              mode="kasir"
+              onClose={() => setRiwayatTarget(null)}
             />
           )}
 

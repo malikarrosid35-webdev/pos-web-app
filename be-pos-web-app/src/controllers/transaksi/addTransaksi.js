@@ -1,6 +1,11 @@
 import pool from "../../database/db.js";
 import { v4 as uuidv4 } from "uuid";
 import { sendTransactionCreated } from "../../notifications/index.js";
+import {
+  JENIS_RIWAYAT_POIN,
+  applyPoinChange,
+  hitungPoinTransaksi,
+} from "../../services/poin.service.js";
 
 const addTransaksi = async (req, res) => {
   let client;
@@ -209,18 +214,28 @@ const addTransaksi = async (req, res) => {
     // Update poin member jika pelanggan member
     let nama_pelanggan_final = `guest-${id_suffix}`;
     if (tipe_pelanggan === "member" && id_pelanggan) {
-      const poinBaru = Math.floor(total_harga / 10000);
+      const poinBaru = hitungPoinTransaksi(total_harga);
       const pelangganResult = await client.query(
-        `UPDATE pelanggan SET 
-          poin_loyalitas = poin_loyalitas + $1,
-          total_pembelian = total_pembelian + $2,
+        `UPDATE pelanggan SET
+          total_pembelian = total_pembelian + $1,
           frekuensi_transaksi = frekuensi_transaksi + 1
-        WHERE id_pelanggan = $3
+        WHERE id_pelanggan = $2
         RETURNING nama_pelanggan`,
-        [poinBaru, total_harga, id_pelanggan],
+        [total_harga, id_pelanggan],
       );
       nama_pelanggan_final =
         pelangganResult.rows[0]?.nama_pelanggan || "Guest";
+
+      if (poinBaru > 0 && pelangganResult.rowCount > 0) {
+        await applyPoinChange(client, {
+          id_pelanggan,
+          perubahan: poinBaru,
+          jenis: JENIS_RIWAYAT_POIN.TRANSAKSI,
+          id_transaksi,
+          id_user,
+          alasan: `Poin dari transaksi ${kode_transaksi}`,
+        });
+      }
     }
 
     // Ambil data kasir

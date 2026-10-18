@@ -13,6 +13,7 @@ import {
   createPelanggan,
   updatePelanggan,
   deletePelanggan,
+  adjustPoinOwner,
 } from "../services/pelangganService.js";
 import { buildOwnerNotificationFeedback } from "../utils/ownerNotificationHelper.js";
 
@@ -157,6 +158,28 @@ export function usePelanggan({
     }
   };
 
+  // Khusus owner. Mengembalikan { poin_sebelum, poin_sesudah, ... } atau null kalau gagal.
+  const adjustPoin = async (id, data) => {
+    try {
+      const response = await adjustPoinOwner(id, data);
+      const hasil = response.data?.data;
+      Swal.fire(
+        "Sukses",
+        `Poin berhasil disesuaikan (${hasil.poin_sebelum} → ${hasil.poin_sesudah})`,
+        "success",
+      );
+      return hasil;
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Gagal menyesuaikan poin";
+      Swal.fire("Error", errorMessage, "error");
+      console.error("Adjust poin error:", err);
+      return null;
+    }
+  };
+
   const remove = async (id, callback) => {
     const result = await Swal.fire({
       title: "Apakah Anda yakin?",
@@ -216,6 +239,7 @@ export function usePelanggan({
     search,
     create,
     update,
+    adjustPoin,
     remove,
     fetchPelangganById,
     selectedPelanggan,

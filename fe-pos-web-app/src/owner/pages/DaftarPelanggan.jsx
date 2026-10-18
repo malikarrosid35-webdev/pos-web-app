@@ -3,6 +3,8 @@ import { useUIStore } from "../../stores/useUIStore.js";
 import { usePelangganStore } from "../../stores/usePelangganStore.js";
 import { usePelanggan } from "../../shared/hooks/usePelanggan.js";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import RiwayatPoinModal from "../../shared/components/RiwayatPoinModal.jsx";
+import PoinAdjustModal from "../components/PoinAdjustModal.jsx";
 
 export default function DaftarPelanggan() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,8 +12,10 @@ export default function DaftarPelanggan() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
   const [isSearching, setIsSearching] = useState(false);
+  const [riwayatTarget, setRiwayatTarget] = useState(null);
+  const [adjustTarget, setAdjustTarget] = useState(null);
 
-  const { fetchPelanggan, search, loading, meta } = usePelanggan({
+  const { fetchPelanggan, search, adjustPoin, loading, meta } = usePelanggan({
     searchQuery: searchTerm,
     setPelanggan,
     mode: "owner",
@@ -60,6 +64,18 @@ export default function DaftarPelanggan() {
     setCurrentPage(1);
   };
   
+  const handleAdjustSubmit = async (data) => {
+    const hasil = await adjustPoin(adjustTarget.id_pelanggan, data);
+    if (hasil) {
+      if (searchTerm.trim()) {
+        search(currentPage, limit);
+      } else {
+        fetchPelanggan(currentPage, limit);
+      }
+    }
+    return hasil;
+  };
+
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= meta.total_page) {
       setCurrentPage(newPage);
@@ -157,13 +173,14 @@ export default function DaftarPelanggan() {
                   Frekuensi
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-left font-bold">Poin</th>
+                <th className="px-4 sm:px-6 py-3 text-left font-bold">Aksi</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {pelanggan.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="6"
+                    colSpan="7"
                     className="px-4 sm:px-6 py-4 text-center text-gray-500"
                   >
                     Tidak ada data pelanggan
@@ -189,6 +206,24 @@ export default function DaftarPelanggan() {
                     </td>
                     <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
                       {p.poin_loyalitas}
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4">
+                      <div className="flex gap-2 whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => setRiwayatTarget(p)}
+                          className="px-3 py-1.5 rounded border border-violet-700 text-violet-700 hover:bg-violet-50 cursor-pointer text-xs sm:text-sm"
+                        >
+                          Riwayat
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAdjustTarget(p)}
+                          className="px-3 py-1.5 rounded bg-violet-700 text-white hover:bg-violet-800 cursor-pointer text-xs sm:text-sm"
+                        >
+                          Sesuaikan Poin
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -243,6 +278,21 @@ export default function DaftarPelanggan() {
             </button>
           </div>
         </div>
+      )}
+
+      {riwayatTarget && (
+        <RiwayatPoinModal
+          pelanggan={riwayatTarget}
+          mode="owner"
+          onClose={() => setRiwayatTarget(null)}
+        />
+      )}
+      {adjustTarget && (
+        <PoinAdjustModal
+          pelanggan={adjustTarget}
+          onSubmit={handleAdjustSubmit}
+          onClose={() => setAdjustTarget(null)}
+        />
       )}
     </div>
   );

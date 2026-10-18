@@ -5,6 +5,8 @@ import {
   searchPelanggan,
 } from "./getPelanggan.js";
 import updatePelangganById from "./updatePelanggan.js";
+import adjustPoin from "./adjustPoin.js";
+import getRiwayatPoin from "./getRiwayatPoin.js";
 // import deletePelangganById from "./deletePelanggan.js";
 
 export {
@@ -13,5 +15,7 @@ export {
   getPelangganById,
   searchPelanggan,
   updatePelangganById,
+  adjustPoin,
+  getRiwayatPoin,
   // deletePelangganById,
 };

@@ -56,6 +56,13 @@ const createPelanggan = (data) => kasirClient.post("/pelanggan", data);
 const updatePelanggan = (id, data) => kasirClient.patch(`/pelanggan/${id}`, data);
 const deletePelanggan = (id) => adminClient.delete(`/pelanggan/${id}`);
 
+const getRiwayatPoinKasir = (id, params) =>
+  kasirClient.get(`/pelanggan/${id}/riwayat-poin`, { params });
+const getRiwayatPoinOwner = (id, params) =>
+  ownerClient.get(`/pelanggan/${id}/riwayat-poin`, { params });
+const adjustPoinOwner = (id, data) =>
+  ownerClient.post(`/pelanggan/${id}/poin`, data);
+
 export {
   getPelangganAdmin,
   getPelangganByIdAdmin,
@@ -69,4 +76,7 @@ export {
   createPelanggan,
   updatePelanggan,
   deletePelanggan,
+  getRiwayatPoinKasir,
+  getRiwayatPoinOwner,
+  adjustPoinOwner,
 };
