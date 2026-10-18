@@ -9,13 +9,13 @@ import {
   searchBarangMasukByNama,
 } from "../../controllers/barangMasuk/index.js";
 
-router.post("/new", authenticate, authorize(["admin"]), addBarangMasukBaru);
+router.post("/new", authenticate, authorize(["admin", "owner"]), addBarangMasukBaru);
 
 router.post(
   "/existing",
   authenticate,
-  authorize(["admin"]),
-  addBarangMasukExisting,
+  authorize(["admin", "owner"]),
+  addBarangMasukExisting, 
 );
 
 router.get("/", authenticate, authorize(["admin", "owner"]), getBarangMasuk);

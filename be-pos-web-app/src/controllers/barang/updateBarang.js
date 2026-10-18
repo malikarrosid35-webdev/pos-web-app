@@ -5,7 +5,6 @@ const updateBarangById = async (req, res) => {
 
   const schema = Joi.object({
     nama_barang: Joi.string().max(100).optional(),
-    kategori_barang: Joi.string().max(50).optional(),
     stok_dasar: Joi.number().integer().min(0).optional(),
     satuan_dasar: Joi.string().valid("PCS", "GRAM").optional(),
     harga_jual_per_sd: Joi.number().precision(2).min(0).optional(),
@@ -51,8 +50,6 @@ const updateBarangById = async (req, res) => {
     };
 
     if (value.nama_barang !== undefined) push("nama_barang", value.nama_barang);
-    if (value.kategori_barang !== undefined)
-      push("kategori_barang", value.kategori_barang);
     if (value.stok_dasar !== undefined) push("stok_dasar", value.stok_dasar);
     if (value.satuan_dasar !== undefined)
       push("satuan_dasar", value.satuan_dasar);
