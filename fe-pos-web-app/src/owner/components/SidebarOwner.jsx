@@ -36,9 +36,9 @@ export default function SidebarOwner({
       path: "/owner/laporan-toko",
     },
     {
-      name: "Barang Masuk",
+      name: "Riwayat Barang Masuk",
       icon: <Package size={20} />,
-      path: "/owner/barang-masuk",
+      path: "/owner/riwayat-barang-masuk",
     },
     {
       name: "Daftar Barang",
@@ -73,8 +73,9 @@ export default function SidebarOwner({
   };
 
   const ConfirmLogoutModal = () => (
-    <div className="fixed inset-0 bg-black opacity-90 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-96 max-w-sm mx-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="relative z-10 bg-white rounded-lg shadow-lg p-6 w-96 max-w-sm mx-4">
         <h2 className="text-xl font-bold text-gray-800 mb-4">
           Konfirmasi Logout
         </h2>

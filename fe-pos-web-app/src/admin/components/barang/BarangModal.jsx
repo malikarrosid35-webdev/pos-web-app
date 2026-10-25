@@ -8,16 +8,11 @@ import {
 import { useBarangStore } from "../../../stores/useBarangStore.js";
 import { X } from "lucide-react";
 
-export default function BarangModal({
-  currentBarang,
-  onClose,
-  onSuccess,
-  mode = "admin",
-}) {
+export default function BarangModal({ currentBarang, onClose, onSuccess }) {
   const { setBarang } = useBarangStore();
   const { create, update } = useBarang({
     setBarang,
-    mode,
+    mode: "admin",
   });
 
   const [formattedHargaJual, setFormattedHargaJual] = useState("");
@@ -85,8 +80,9 @@ export default function BarangModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/85 flex justify-center z-50 overflow-y-auto">
-      <div className="bg-white rounded-lg w-full max-w-md my-10 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 flex justify-center z-50 overflow-y-auto">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="relative z-10 bg-white rounded-lg w-full max-w-md my-10 max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">

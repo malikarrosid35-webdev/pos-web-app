@@ -10,8 +10,9 @@ export const PelangganForm = ({
 }) => {
   return (
     // Mobile: sheet dari bawah (items-end) | Tablet+: modal di tengah (items-center)
-    <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-2xl shadow-xl overflow-hidden">
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="relative z-10 bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-2xl shadow-xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b">
           <h3 className="text-lg font-semibold">{title}</h3>

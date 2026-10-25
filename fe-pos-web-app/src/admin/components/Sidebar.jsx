@@ -1,10 +1,4 @@
-import {
-  BarChart2,
-  List,
-  LogOut,
-  Menu,
-  Package,
-} from "lucide-react";
+import { BarChart2, List, LogOut, Menu, Package } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useUIStore } from "../../stores/useUIStore.js";
@@ -44,8 +38,9 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
   };
 
   const ConfirmLogoutModal = () => (
-    <div className="fixed inset-0 bg-black opacity-90 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-96 max-w-sm mx-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+      <div className="relative z-10 bg-white rounded-lg shadow-lg p-6 w-96 max-w-sm mx-4">
         <h2 className="text-xl font-bold text-gray-800 mb-4">
           Konfirmasi Logout
         </h2>
@@ -74,7 +69,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
     <>
       <aside
         className={`bg-slate-900 text-blue-400 flex flex-col transition-all duration-300 shrink-0 ${
-          isOpen ? "w-64" : "w-16"}`}
+          isOpen ? "w-64" : "w-16"
+        }`}
       >
         <div className="p-4 flex items-center justify-between">
           <Menu onClick={toggleSidebar} className="cursor-pointer" size={22} />
