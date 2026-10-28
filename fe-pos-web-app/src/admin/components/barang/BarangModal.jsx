@@ -54,9 +54,9 @@ export default function BarangModal({ currentBarang, onClose, onSuccess }) {
     return formatted;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, preparedFormData) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const formData = preparedFormData || new FormData(e.target);
 
     if (formattedHargaJual) {
       const rawHargaJual = parseNumber(formattedHargaJual);

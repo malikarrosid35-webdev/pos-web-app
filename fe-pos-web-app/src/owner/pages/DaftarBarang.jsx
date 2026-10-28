@@ -136,11 +136,11 @@ export default function DaftarBarang() {
                   <th className="px-4 sm:px-6 py-3 text-left font-bold">
                     Nama Barang
                   </th>
-                  {/* <th className="px-4 sm:px-6 py-3 text-left font-bold">
-                    Kategori
-                  </th> */}
                   <th className="px-4 sm:px-6 py-3 text-left font-bold">
                     Stok
+                  </th>
+                  <th className="px-4 sm:px-6 py-3 text-left font-bold">
+                    Minimum Stok
                   </th>
                   <th className="px-4 sm:px-6 py-3 text-left font-bold">
                     Harga Beli
@@ -164,39 +164,57 @@ export default function DaftarBarang() {
                     </td>
                   </tr>
                 ) : (
-                  barang.map((item, index) => (
-                    <tr key={item.id_barang} className="hover:bg-gray-50">
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
-                        {(currentPage - 1) * LIMIT + index + 1}
-                      </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-900 font-semibold">
-                        {item.nama_barang}
-                      </td>
-                      {/* <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
-                        {item.kategori_barang}
-                      </td> */}
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
-                        {formatQty(item.stok_dasar, item.satuan_dasar)}
-                      </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
-                        {formatToRupiah(parseFloat(item.harga_modal_per_sd))}
-                      </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
-                        {formatToRupiah(parseFloat(item.harga_jual_per_sd))}
-                      </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4">
-                        <button
-                          onClick={() => {
-                            setCurrentBarang(item);
-                            setIsModalOpen(true);
-                          }}
-                          className="bg-violet-700 text-white px-3 py-1 rounded hover:bg-violet-800 cursor-pointer"
+                  barang.map((item, index) => {
+                    const stok = Number(item.stok_dasar ?? 0);
+                    const minimumStok = Number(item.minimum_stok ?? 0);
+                    const stokRendah = minimumStok > 0 && stok <= minimumStok;
+                    
+                    return (
+                      <tr key={item.id_barang} className="hover:bg-gray-50">
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
+                          {(currentPage - 1) * LIMIT + index + 1}
+                        </td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-900 font-semibold">
+                          {item.nama_barang}
+                        </td>
+                        <td
+                          className={`px-6 py-4 whitespace-nowrap text-sm ${
+                            stokRendah
+                              ? "bg-red-100 text-red-700 font-semibold"
+                              : ""
+                          }`}
+                          title={
+                            stokRendah ? "Barang perlu di re-stok!" : undefined
+                          }
                         >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                          {formatQty(item.stok_dasar, item.satuan_dasar)}
+                          {stokRendah && (
+                            <span className="ml-2 text-xs text-red-600">⚠</span>
+                          )}
+                        </td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-900 font-semibold">
+                          {formatQty(item.minimum_stok, item.satuan_dasar)}
+                        </td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
+                          {formatToRupiah(parseFloat(item.harga_modal_per_sd))}
+                        </td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
+                          {formatToRupiah(parseFloat(item.harga_jual_per_sd))}
+                        </td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4">
+                          <button
+                            onClick={() => {
+                              setCurrentBarang(item);
+                              setIsModalOpen(true);
+                            }}
+                            className="bg-violet-700 text-white px-3 py-1 rounded hover:bg-violet-800 cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

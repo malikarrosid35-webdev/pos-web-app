@@ -6,7 +6,6 @@ export default function BarangTable({
   isLoading,
   error,
   onEdit,
-  // onDelete,
   openModal,
   pageOffset = 0,
 }) {
@@ -36,6 +35,7 @@ export default function BarangTable({
               "No",
               "Nama Barang",
               "Stok",
+              "Minimum Stok",
               "Harga Jual",
               "Harga Beli",
               "Tindakan",
@@ -74,39 +74,57 @@ export default function BarangTable({
               </td>
             </tr>
           ) : (
-            barang.map((item, index) => (
-              <tr key={item.id_barang} className="border text-center">
-                <td className="px-6 py-4 whitespace-nowrap text-sm border">
-                  {pageOffset + index + 1}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm border font-medium">
-                  {item.nama_barang}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm border">
-                  {formatQty(item.stok_dasar, item.satuan_dasar)}
-                </td>
-                {/* <td className="px-6 py-4 whitespace-nowrap text-sm border">
-                  {item.kategori_barang}
-                </td> */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm border">
-                  {formatToRupiah(item.harga_jual_per_sd)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm border">
-                  {formatToRupiah(item.harga_modal_per_sd)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button
-                    onClick={() => {
-                      onEdit(item);
-                      openModal();
-                    }}
-                    className="bg-blue-500 text-white mr-3 px-2 py-1 rounded hover:bg-blue-700 cursor-pointer"
+            barang.map((item, index) => {
+              const stok = Number(item.stok_dasar ?? 0);
+              const minimumStok = Number(item.minimum_stok ?? 0);
+              const stokRendah = minimumStok > 0 && stok <= minimumStok;
+              
+              return (
+                <tr key={item.id_barang} className="border text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm border">
+                    {pageOffset + index + 1}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm border font-medium">
+                    {item.nama_barang}
+                  </td>
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm border ${
+                      stokRendah ? "bg-red-100 text-red-700 font-semibold" : ""
+                    }`}
+                    title={
+                      stokRendah
+                        ? "Barang perlu di re-stok!"
+                        : undefined
+                    }
                   >
-                    Edit
-                  </button>
-                </td>
-              </tr>
-            ))
+                    {formatQty(item.stok_dasar, item.satuan_dasar)}
+                    {stokRendah && (
+                      <span className="ml-2 text-xs text-red-600">⚠</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm border">
+                    {formatQty(item.minimum_stok, item.satuan_dasar)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm border">
+                    {formatToRupiah(item.harga_jual_per_sd)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm border">
+                    {formatToRupiah(item.harga_modal_per_sd)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      onClick={() => {
+                        onEdit(item);
+                        openModal();
+                      }}
+                      className="bg-blue-500 text-white mr-3 px-2 py-1 rounded hover:bg-blue-700 cursor-pointer"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

@@ -23,7 +23,6 @@ export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
 
   const [form, setForm] = useState({
     nama_barang: "",
-    // kategori_barang: "",
     stok_dasar: "",
     satuan_dasar: "",
     harga_beli_total: "",
@@ -84,7 +83,6 @@ export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
   const resetForm = () => {
     setForm({
       nama_barang: "",
-      // kategori_barang: "",
       stok_dasar: "",
       satuan_dasar: "",
       harga_beli_total: "",
@@ -115,7 +113,6 @@ export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
 
     if (
       !form.nama_barang ||
-      // '!form.kategori_barang ||
       !form.stok_dasar ||
       !form.satuan_dasar
     ) {
@@ -130,7 +127,6 @@ export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
     try {
       const payload = {
         nama_barang: form.nama_barang.trim(),
-        // kategori_barang: form.kategori_barang.trim(),
         stok_dasar: parseInt(form.stok_dasar, 10),
         satuan_dasar: form.satuan_dasar.toUpperCase(),
         harga_modal_per_sd: parseFloat(hargaPerSd),
@@ -164,13 +160,6 @@ export default function FormBarangMasukBaru({ onSuccess, mode = "admin" }) {
         value={form.nama_barang}
         onChange={(e) => setForm({ ...form, nama_barang: e.target.value })}
       />
-
-      {/* <input
-        className="w-full border p-2 rounded"
-        placeholder="Kategori"
-        value={form.kategori_barang}
-        onChange={(e) => setForm({ ...form, kategori_barang: e.target.value })}
-      /> */}
 
       <select
         className="w-full border p-2 rounded cursor-pointer"

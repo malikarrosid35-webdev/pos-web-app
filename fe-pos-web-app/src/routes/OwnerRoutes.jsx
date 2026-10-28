@@ -70,7 +70,7 @@ export default function OwnerRoutes() {
             <Route path="laporan-toko" element={<LaporanToko />} />
             <Route path="barang-masuk" element={<BarangMasuk />} />
             <Route
-              path="riwayat-barang-masuk"
+              path="barang-masuk"
               element={<Navigate to="/owner/barang-masuk" replace />}
             />
             <Route path="daftar-barang" element={<DaftarBarang />} />
