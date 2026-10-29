@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "be-pos-web-app": {
+      "root": "be-pos-web-app",
+      "framework": "express"
+    },
+    "fe-pos-web-app": {
+      "root": "fe-pos-web-app",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "be-pos-web-app",
+        "path": "/api/$1"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "fe-pos-web-app"
+      }
+    }
+  ]
+}
