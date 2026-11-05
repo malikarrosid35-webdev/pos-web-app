@@ -13,6 +13,8 @@ import {
   X,
 } from "lucide-react";
 
+const MIN_POIN_TUKAR = 10;
+
 export default function DaftarPelanggan() {
   const [searchTerm, setSearchTerm] = useState("");
   const { pelanggan, setPelanggan } = usePelangganStore();
@@ -84,6 +86,15 @@ export default function DaftarPelanggan() {
     event.preventDefault();
     if (!selectedPelanggan) return;
 
+    if (Number(selectedPelanggan.poin_loyalitas ?? 0) < MIN_POIN_TUKAR) {
+      Swal.fire(
+        "Poin Tidak Cukup",
+        `Pelanggan harus memiliki minimal ${MIN_POIN_TUKAR} poin untuk menukar hadiah.`,
+        "warning",
+      );
+      return;
+    }
+    
     setIsRedeeming(true);
     try {
       const response = await addHistoriTukarPoinOwner({
@@ -250,29 +261,76 @@ export default function DaftarPelanggan() {
                       {p.frekuensi_transaksi}
                     </td>
                     <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span>{p.poin_loyalitas}</span>
-                        <button
-                          type="button"
-                          onClick={() => openRedemptionForm(p)}
-                          className="flex items-center gap-1 rounded bg-emerald-600 px-2 py-1 text-xs text-white hover:bg-emerald-700 cursor-pointer"
-                        >
-                          <Gift size={13} />
-                          Tukar
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            navigate(
-                              `/owner/daftar-pelanggan/${p.id_pelanggan}/histori-tukar-poin`,
-                            )
-                          }
-                          className="flex items-center gap-1 rounded bg-violet-700 px-2 py-1 text-xs text-white hover:bg-violet-800 cursor-pointer"
-                        >
-                          <History size={13} />
-                          Histori
-                        </button>
-                      </div>
+                      {(() => {
+                        const poin = Number(p.poin_loyalitas ?? 0);
+                        const poinCukup = poin >= MIN_POIN_TUKAR;
+
+                        return (
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span>{poin}</span>
+
+                            {/* Tombol Tukar */}
+                            <button
+                              type="button"
+                              onClick={() => poinCukup && openRedemptionForm(p)}
+                              disabled={!poinCukup}
+                              title={
+                                poinCukup
+                                  ? "Tukar poin pelanggan"
+                                  : `Poin minimal ${MIN_POIN_TUKAR} untuk menukar`
+                              }
+                              className={`flex items-center gap-1 rounded px-2 py-1 text-xs text-white ${
+                                poinCukup
+                                  ? "bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
+                                  : "bg-gray-300 cursor-not-allowed opacity-60"
+                              }`}
+                            >
+                              <Gift size={13} /> Tukar
+                            </button>
+
+                            {/* Tombol Histori — disabled jika poin belum cukup */}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                poinCukup &&
+                                navigate(
+                                  `/owner/daftar-pelanggan/${p.id_pelanggan}/histori-tukar-poin`,
+                                )
+                              }
+                              disabled={!poinCukup}
+                              title={
+                                poinCukup
+                                  ? "Lihat histori tukar poin"
+                                  : `Poin minimal ${MIN_POIN_TUKAR} untuk melihat histori`
+                              }
+                              className={`flex items-center gap-1 rounded px-2 py-1 text-xs text-white ${
+                                poinCukup
+                                  ? "bg-violet-700 hover:bg-violet-800 cursor-pointer"
+                                  : "bg-gray-300 cursor-not-allowed opacity-60"
+                              }`}
+                            >
+                              <History size={13} /> Histori
+                            </button>
+
+                            {/* Label status poin — di sebelah tombol Histori */}
+                            {poinCukup ? (
+                              <span
+                                className="bg-green-100 text-green-800 py-1 px-2 rounded-full text-xs font-medium whitespace-nowrap"
+                                title={`Poin ${poin} mencukupi (minimal ${MIN_POIN_TUKAR})`}
+                              >
+                                Siap Ditukarkan
+                              </span>
+                            ) : (
+                              <span
+                                className="bg-red-100 text-red-700 py-1 px-2 rounded-full text-xs font-medium whitespace-nowrap"
+                                title={`Butuh minimal ${MIN_POIN_TUKAR} poin untuk menukar`}
+                              >
+                                ⚠ Poin Belum Cukup
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </td>
                   </tr>
                 ))
@@ -343,7 +401,10 @@ export default function DaftarPelanggan() {
           >
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <h2 id="redemption-title" className="text-xl font-bold text-gray-900">
+                <h2
+                  id="redemption-title"
+                  className="text-xl font-bold text-gray-900"
+                >
                   Form Tukar Poin
                 </h2>
                 <p className="mt-1 text-sm text-gray-500">
@@ -385,12 +446,12 @@ export default function DaftarPelanggan() {
                   type="number"
                   value={hargaHadiah}
                   onChange={(event) => setHargaHadiah(event.target.value)}
-                  min="1"
+                  min={MIN_POIN_TUKAR}
                   max={selectedPelanggan.poin_loyalitas}
                   step="1"
                   required
                   className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200"
-                  placeholder="Masukkan jumlah poin"
+                  placeholder={`Masukkan ${MIN_POIN_TUKAR} poin`}
                 />
               </label>
 

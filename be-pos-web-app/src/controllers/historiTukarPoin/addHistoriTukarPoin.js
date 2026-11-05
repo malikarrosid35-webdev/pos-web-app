@@ -53,6 +53,15 @@ const addHistoriTukarPoin = async (req, res) => {
       });
     }
 
+    if (poin_loyalitas < 10) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        success: false,
+        message:
+          "Poin loyalitas pelanggan minimal 10 untuk melakukan penukaran",
+      });
+    }
+    
     const id_histori_tukar = uuidv4();
     const result = await client.query(
       `INSERT INTO histori_tukar_poin (id_histori_tukar, id_pelanggan, hadiah, harga_hadiah)

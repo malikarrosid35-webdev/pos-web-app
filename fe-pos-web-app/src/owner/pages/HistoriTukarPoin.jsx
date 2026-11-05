@@ -7,6 +7,7 @@ import { getPelangganByIdOwner } from "../../shared/services/pelangganService.js
 import { useUIStore } from "../../stores/useUIStore.js";
 
 const LIMIT = 10;
+const MIN_POIN_TUKAR = 10;
 
 export default function HistoriTukarPoin() {
   const { id_pelanggan } = useParams();
@@ -36,7 +37,18 @@ export default function HistoriTukarPoin() {
     ])
       .then(([pelangganResponse, historiResponse]) => {
         if (!isCurrent) return;
-        setPelanggan(pelangganResponse.data.data);
+        const pelangganData = pelangganResponse.data.data;
+
+        if (Number(pelangganData.poin_loyalitas ?? 0) < MIN_POIN_TUKAR) {
+          Swal.fire(
+            "Poin Tidak Cukup",
+            `Pelanggan ini baru memiliki ${pelangganData.poin_loyalitas ?? 0} poin. Minimal ${MIN_POIN_TUKAR} poin untuk melihat histori penukaran.`,
+            "warning",
+          ).then(() => navigate("/owner/daftar-pelanggan"));
+          return;
+        }
+
+        setPelanggan(pelangganData);
         setHistori(historiResponse.data.data || []);
         setMeta(historiResponse.data.meta || { total_page: 0, total_data: 0 });
       })
